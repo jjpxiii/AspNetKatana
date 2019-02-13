@@ -1,4 +1,5 @@
-﻿// Copyright (c) Microsoft Open Technologies, Inc. All rights reserved. See License.txt in the project root for license information.
+﻿// Copyright (c) .NET Foundation. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
 using System.Globalization;
@@ -23,7 +24,7 @@ namespace Microsoft.Owin.Security.Google
         /// <param name="accessToken">Google OAuth 2.0 access token</param>
         /// <param name="refreshToken">Goolge OAuth 2.0 refresh token</param>
         /// <param name="expires">Seconds until expiration</param>
-        public GoogleOAuth2AuthenticatedContext(IOwinContext context, JObject user, string accessToken, 
+        public GoogleOAuth2AuthenticatedContext(IOwinContext context, JObject user, string accessToken,
             string refreshToken, string expires)
             : base(context)
         {
@@ -38,11 +39,11 @@ namespace Microsoft.Owin.Security.Google
             }
 
             Id = TryGetValue(user, "id");
-            Name = TryGetValue(user, "displayName");
-            GivenName = TryGetValue(user, "name", "givenName");
-            FamilyName = TryGetValue(user, "name", "familyName");
-            Profile = TryGetValue(user, "url");
-            Email = TryGetFirstValue(user, "emails", "value"); // TODO:
+            Name = TryGetValue(user, "name");
+            GivenName = TryGetValue(user, "given_name");
+            FamilyName = TryGetValue(user, "family_name");
+            Profile = TryGetValue(user, "link");
+            Email = TryGetValue(user, "email");
         }
 
         /// <summary>
@@ -69,18 +70,18 @@ namespace Microsoft.Owin.Security.Google
             }
 
             Id = TryGetValue(user, "id");
-            Name = TryGetValue(user, "displayName");
-            GivenName = TryGetValue(user, "name", "givenName");
-            FamilyName = TryGetValue(user, "name", "familyName");
-            Profile = TryGetValue(user, "url");
-            Email = TryGetFirstValue(user, "emails", "value"); // TODO:
+            Name = TryGetValue(user, "name");
+            GivenName = TryGetValue(user, "given_name");
+            FamilyName = TryGetValue(user, "family_name");
+            Profile = TryGetValue(user, "link");
+            Email = TryGetValue(user, "email");
         }
 
         /// <summary>
         /// Gets the JSON-serialized user
         /// </summary>
         /// <remarks>
-        /// Contains the Google user obtained from the endpoint https://www.googleapis.com/oauth2/v3/userinfo
+        /// Contains the Google user obtained from the UserInformationEndpoint
         /// </remarks>
         public JObject User { get; private set; }
 
@@ -151,43 +152,6 @@ namespace Microsoft.Owin.Security.Google
         {
             JToken value;
             return user.TryGetValue(propertyName, out value) ? value.ToString() : null;
-        }
-
-        // Get the given subProperty from a property.
-        private static string TryGetValue(JObject user, string propertyName, string subProperty)
-        {
-            JToken value;
-            if (user.TryGetValue(propertyName, out value))
-            {
-                var subObject = JObject.Parse(value.ToString());
-                if (subObject != null && subObject.TryGetValue(subProperty, out value))
-                {
-                    return value.ToString();
-                }
-            }
-            return null;
-        }
-
-        // Get the given subProperty from a list property.
-        private static string TryGetFirstValue(JObject user, string propertyName, string subProperty)
-        {
-            JToken value;
-            if (user.TryGetValue(propertyName, out value))
-            {
-                var array = JArray.Parse(value.ToString());
-                if (array != null && array.Count > 0)
-                {
-                    var subObject = JObject.Parse(array.First.ToString());
-                    if (subObject != null)
-                    {
-                        if (subObject.TryGetValue(subProperty, out value))
-                        {
-                            return value.ToString();
-                        }
-                    }
-                }
-            }
-            return null;
         }
     }
 }

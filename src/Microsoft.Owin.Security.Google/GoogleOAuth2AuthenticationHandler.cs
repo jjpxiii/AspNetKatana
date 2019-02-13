@@ -16,9 +16,9 @@ namespace Microsoft.Owin.Security.Google
 {
     internal class GoogleOAuth2AuthenticationHandler : AuthenticationHandler<GoogleOAuth2AuthenticationOptions>
     {
-        private const string TokenEndpoint = "https://accounts.google.com/o/oauth2/token";
-        private const string UserInfoEndpoint = "https://www.googleapis.com/plus/v1/people/me";
-        private const string AuthorizeEndpoint = "https://accounts.google.com/o/oauth2/auth";
+        private const string TokenEndpoint = "https://www.googleapis.com/oauth2/v4/token";
+        private const string UserInfoEndpoint = "https://www.googleapis.com/oauth2/v2/userinfo";
+        private const string AuthorizeEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
 
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
